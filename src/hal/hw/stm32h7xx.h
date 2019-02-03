@@ -1,12 +1,36 @@
-/*
- * stm32h7xx.h
- *
- *  Created on: Jun 16, 2018
- *      Author: ahmed
- */
+/*==============================================================================
 
-#ifndef LIB_HW_STM32H7XX_H_
-#define LIB_HW_STM32H7XX_H_
+ Name        : stm32h7xx.h
+ Version     : 1.0.0
+ Description : Hardware registers definition for STM32H7xx MCUs
+
+--------------------------------------------------------------------------------
+
+ The MIT License (MIT)
+ Copyright (c) 2018 Ahmed Elzoughby
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+===============================================================================*/
+
+#ifndef HAL_HW_STM32H7XX_H_
+#define HAL_HW_STM32H7XX_H_
 
 
 #define _VECTOR_TABLE_SIZE	166
@@ -32,6 +56,12 @@
 #define PORTI_BASE		0x58022000
 #define PORTJ_BASE		0x58022400
 #define PORTK_BASE		0x58022800
+#define SPI1_I2S1_BASE	0x40013000
+#define SPI2_I2S2_BASE	0x40003800
+#define SPI3_I2S3_BASE	0x40003C00
+#define SPI4_BASE		0x40013400
+#define SPI5_BASE		0x40015000
+#define SPI6_BASE		0x58001400
 
 
 typedef enum {
@@ -423,31 +453,183 @@ typedef struct {
 	__IO uint32_t AFRH;
 } gpioStruct;
 
+typedef struct {
+	__IO uint32_t CR1;
+	__IO uint32_t CR2;
+	__IO uint32_t CFG1;
+	__IO uint32_t CFG2;
+	__IO uint32_t IER;
+	__IO uint32_t SR;
+	__IO uint32_t IFCR;
+	uint32_t      RESERVED0;
+	__IO uint32_t TXDR;
+	uint32_t      RESERVED1[3];
+	__IO uint32_t RXDR;
+	uint32_t      RESERVED2[3];
+	__IO uint32_t CRCPOLY;
+	__IO uint32_t TXCRC;
+	__IO uint32_t RXCRC;
+	__IO uint32_t UDRDR;
+	__IO uint32_t I2SCFGR;
+} spiStruct;
+
+
+
+
 typedef enum {
-	PIN0 = 0x0,
-	PIN1 = 0x1,
-	PIN2 = 0x2,
-	PIN3 = 0x3,
-	PIN4 = 0x4,
-	PIN5 = 0x5,
-	PIN6 = 0x6,
-	PIN7 = 0x7,
-	PIN8 = 0x8,
-	PIN9 = 0x9,
-	PIN10 = 0xA,
-	PIN11 = 0xB,
-	PIN12 = 0xC,
-	PIN13 = 0xD,
-	PIN14 = 0xE,
-	PIN15 = 0xF
+	PIN0	= 0x0,
+	PIN1	= 0x1,
+	PIN2	= 0x2,
+	PIN3	= 0x3,
+	PIN4	= 0x4,
+	PIN5	= 0x5,
+	PIN6	= 0x6,
+	PIN7	= 0x7,
+	PIN8	= 0x8,
+	PIN9	= 0x9,
+	PIN10	= 0xA,
+	PIN11	= 0xB,
+	PIN12	= 0xC,
+	PIN13	= 0xD,
+	PIN14	= 0xE,
+	PIN15	= 0xF
 } gpioPin_t;
 
 typedef enum {
-	GPIO
+	DIO					   = 0x00,
+	GPIO				   = 0x00,
+
+	GPIO_AF0_RTC_50Hz      = 0x00,
+	GPIO_AF0_MCO           = 0x00,
+	GPIO_AF0_SWJ           = 0x00,
+	GPIO_AF0_LCDBIAS       = 0x00,
+	GPIO_AF0_TRACE         = 0x00,
+
+	GPIO_AF1_TIM1          = 0x01,
+	GPIO_AF1_TIM2          = 0x01,
+	GPIO_AF1_TIM16         = 0x01,
+	GPIO_AF1_TIM17         = 0x01,
+	GPIO_AF1_LPTIM1        = 0x01,
+	GPIO_AF1_HRTIM1        = 0x01,
+
+	GPIO_AF2_TIM3          = 0x02,
+	GPIO_AF2_TIM4          = 0x02,
+	GPIO_AF2_TIM5          = 0x02,
+	GPIO_AF2_TIM12         = 0x02,
+	GPIO_AF2_HRTIM1        = 0x02,
+	GPIO_AF2_SAI1          = 0x02,
+
+	GPIO_AF3_TIM8          = 0x03,
+	GPIO_AF3_LPTIM2        = 0x03,
+	GPIO_AF3_DFSDM1        = 0x03,
+	GPIO_AF3_HRTIM1        = 0x03,
+	GPIO_AF3_LPTIM3        = 0x03,
+	GPIO_AF3_LPTIM4        = 0x03,
+	GPIO_AF3_LPTIM5        = 0x03,
+	GPIO_AF3_LPUART        = 0x03,
+
+	GPIO_AF4_I2C1          = 0x04,
+	GPIO_AF4_I2C2          = 0x04,
+	GPIO_AF4_I2C3          = 0x04,
+	GPIO_AF4_I2C4          = 0x04,
+	GPIO_AF4_TIM15         = 0x04,
+	GPIO_AF4_CEC           = 0x04,
+	GPIO_AF4_LPTIM2        = 0x04,
+	GPIO_AF4_USART1        = 0x04,
+	GPIO_AF4_DFSDM1        = 0x04,
+
+	GPIO_AF5_SPI1          = 0x05,
+	GPIO_AF5_SPI2          = 0x05,
+	GPIO_AF5_SPI3          = 0x05,
+	GPIO_AF5_SPI4          = 0x05,
+	GPIO_AF5_SPI5          = 0x05,
+	GPIO_AF5_SPI6          = 0x05,
+	GPIO_AF5_CEC           = 0x05,
+
+	GPIO_AF6_SPI2          = 0x06,
+	GPIO_AF6_SPI3          = 0x06,
+	GPIO_AF6_SAI1          = 0x06,
+	GPIO_AF6_SAI3          = 0x06,
+	GPIO_AF6_I2C4          = 0x06,
+	GPIO_AF6_DFSDM1        = 0x06,
+	GPIO_AF6_UART4         = 0x06,
+
+	GPIO_AF7_SPI2          = 0x07,
+	GPIO_AF7_SPI3          = 0x07,
+	GPIO_AF7_SPI6          = 0x07,
+	GPIO_AF7_USART1        = 0x07,
+	GPIO_AF7_USART2        = 0x07,
+	GPIO_AF7_USART3        = 0x07,
+	GPIO_AF7_USART6        = 0x07,
+	GPIO_AF7_UART7         = 0x07,
+	GPIO_AF7_DFSDM1        = 0x07,
+	GPIO_AF7_SDIO1         = 0x07,
+
+	GPIO_AF8_SPI6          = 0x08,
+	GPIO_AF8_SAI2          = 0x08,
+	GPIO_AF8_SAI4          = 0x08,
+	GPIO_AF8_UART4         = 0x08,
+	GPIO_AF8_UART5         = 0x08,
+	GPIO_AF8_UART8         = 0x08,
+	GPIO_AF8_SPDIF         = 0x08,
+	GPIO_AF8_LPUART        = 0x08,
+	GPIO_AF8_SDIO1         = 0x08,
+
+	GPIO_AF9_FDCAN1        = 0x09,
+	GPIO_AF9_FDCAN2        = 0x09,
+	GPIO_AF9_TIM13         = 0x09,
+	GPIO_AF9_TIM14         = 0x09,
+	GPIO_AF9_QUADSPI       = 0x09,
+	GPIO_AF9_SDIO2         = 0x09,
+	GPIO_AF9_LTDC          = 0x09,
+	GPIO_AF9_SPDIF         = 0x09,
+	GPIO_AF9_FMC           = 0x09,
+	GPIO_AF9_SAI4          = 0x09,
+
+	GPIO_AF10_QUADSPI      = 0xA,
+	GPIO_AF10_SAI2         = 0xA,
+	GPIO_AF10_SAI4         = 0xA,
+	GPIO_AF10_SDIO2        = 0xA,
+	GPIO_AF10_OTG2_HS      = 0xA,
+	GPIO_AF10_OTG1_FS      = 0xA,
+	GPIO_AF10_COMP1        = 0xA,
+	GPIO_AF10_COMP2        = 0xA,
+	GPIO_AF10_LTDC         = 0xA,
+
+	GPIO_AF11_SWP          = 0x0B,
+	GPIO_AF11_ETH          = 0x0B,
+	GPIO_AF11_MDIOS        = 0x0B,
+	GPIO_AF11_OTG1_HS      = 0x0B,
+	GPIO_AF11_UART7        = 0x0B,
+	GPIO_AF11_SDIO2        = 0x0B,
+	GPIO_AF11_DFSDM1       = 0x0B,
+	GPIO_AF11_COMP1        = 0x0B,
+	GPIO_AF11_COMP2        = 0x0B,
+	GPIO_AF11_I2C4         = 0x0B,
+
+	GPIO_AF12_FMC          = 0xC,
+	GPIO_AF12_SDIO1        = 0xC,
+	GPIO_AF12_MDIOS        = 0xC,
+	GPIO_AF12_OTG2_FS      = 0xC,
+	GPIO_AF12_COMP1        = 0xC,
+	GPIO_AF12_COMP2        = 0xC,
+	GPIO_AF12_LTDC         = 0xC,
+
+	GPIO_AF13_DCMI         = 0x0D,
+	GPIO_AF13_DSI          = 0x0D,
+	GPIO_AF13_COMP1        = 0x0D,
+	GPIO_AF13_COMP2        = 0x0D,
+	GPIO_AF13_LTDC         = 0x0D,
+
+	GPIO_AF14_LTDC         = 0x0E,
+	GPIO_AF14_UART5        = 0x0E,
+
+	GPIO_AF15_EVENTOUT     = 0x0F
 } gpioAltFun_t;
 
-typedef gpioStruct* gpioPort_t;
 
+typedef gpioStruct* gpioPort_t;
+typedef spiStruct* spiInterface_t;
 
 
 #define RCC			((rccStruct*) RCC_BASE)
@@ -464,6 +646,12 @@ typedef gpioStruct* gpioPort_t;
 #define PORTI		((gpioStruct*) PORTI_BASE)
 #define PORTJ		((gpioStruct*) PORTJ_BASE)
 #define PORTK		((gpioStruct*) PORTK_BASE)
+#define SPI1_I2S1	((spiStruct*) SPI1_I2S1_BASE)
+#define SPI2_I2S2	((spiStruct*) SPI2_I2S2_BASE)
+#define SPI3_I2S3	((spiStruct*) SPI3_I2S3_BASE)
+#define SPI4		((spiStruct*) SPI4_BASE)
+#define SPI5		((spiStruct*) SPI5_BASE)
+#define SPI6		((spiStruct*) SPI6_BASE)
 
 
 /********************  Bit definition for RCC_AHB4ENR register  ******************/
@@ -484,6 +672,60 @@ typedef gpioStruct* gpioPort_t;
 #define RCC_AHB4ENR_HSEMEN		(0x1U << 25)
 #define RCC_AHB4ENR_BKPRAMEN	(0x1U << 28)
 
+/********************  Bit definition for RCC_APB1LENR register  ******************/
+#define RCC_APB1LENR_TIM2EN		(0x1U << 0)
+#define RCC_APB1LENR_TIM3EN		(0x1U << 1)
+#define RCC_APB1LENR_TIM4EN		(0x1U << 2)
+#define RCC_APB1LENR_TIM5EN		(0x1U << 3)
+#define RCC_APB1LENR_TIM6EN		(0x1U << 4)
+#define RCC_APB1LENR_TIM7EN		(0x1U << 5)
+#define RCC_APB1LENR_TIM12EN	(0x1U << 6)
+#define RCC_APB1LENR_TIM13EN	(0x1U << 7)
+#define RCC_APB1LENR_TIM14EN	(0x1U << 8)
+#define RCC_APB1LENR_LPTIM1EN	(0x1U << 9)
+#define RCC_APB1LENR_SPI2EN		(0x1U << 14)
+#define RCC_APB1LENR_SPI3EN		(0x1U << 15)
+#define RCC_APB1LENR_SPDIFRXEN	(0x1U << 16)
+#define RCC_APB1LENR_USART2EN	(0x1U << 17)
+#define RCC_APB1LENR_USART3EN	(0x1U << 18)
+#define RCC_APB1LENR_UART4EN	(0x1U << 19)
+#define RCC_APB1LENR_UART5EN	(0x1U << 20)
+#define RCC_APB1LENR_I2C1EN		(0x1U << 21)
+#define RCC_APB1LENR_I2C2EN		(0x1U << 22)
+#define RCC_APB1LENR_I2C3EN		(0x1U << 23)
+#define RCC_APB1LENR_HDMICECEN	(0x1U << 27)
+#define RCC_APB1LENR_DAC12EN	(0x1U << 29)
+#define RCC_APB1LENR_UART7EN	(0x1U << 30)
+#define RCC_APB1LENR_UART8EN	(0x1U << 31)
+
+/********************  Bit definition for RCC_APB1HENR register  ******************/
+#define RCC_APB1HENR_CRSEN		(0x1U << 1)
+#define RCC_APB1HENR_SWPEN		(0x1U << 2)
+#define RCC_APB1HENR_OPAMPEN	(0x1U << 4)
+#define RCC_APB1HENR_MDIOSEN	(0x1U << 5)
+#define RCC_APB1HENR_FDCANEN	(0x1U << 8)
+
+/********************  Bit definition for RCC_APB2ENR register  ******************/
+#define RCC_APB2ENR_TIM1EN		(0x1U << 0)
+#define RCC_APB2ENR_TIM8EN		(0x1U << 1)
+#define RCC_APB2ENR_USART1EN	(0x1U << 4)
+#define RCC_APB2ENR_USART6EN	(0x1U << 5)
+#define RCC_APB2ENR_SPI1EN		(0x1U << 12)
+#define RCC_APB2ENR_SPI4EN		(0x1U << 13)
+#define RCC_APB2ENR_TIM15EN		(0x1U << 16)
+#define RCC_APB2ENR_TIM16EN		(0x1U << 17)
+#define RCC_APB2ENR_TIM17EN		(0x1U << 18)
+#define RCC_APB2ENR_SPI5EN		(0x1U << 20)
+#define RCC_APB2ENR_SAI1EN		(0x1U << 22)
+#define RCC_APB2ENR_SAI2EN		(0x1U << 23)
+#define RCC_APB2ENR_SAI3EN		(0x1U << 24)
+#define RCC_APB2ENR_DFSDM1EN	(0x1U << 28)
+#define RCC_APB2ENR_HRTIMEN		(0x1U << 29)
+
+/********************  Bit definition for RCC_APB3ENR register  ******************/
+#define RCC_APB2ENR_LTDCEN		(0x1U << 3)
+#define RCC_APB2ENR_WWDG1EN		(0x1U << 6)
+
 /********************  Bit definition for RCC_APB4ENR register  ******************/
 #define RCC_APB4ENR_SYSCFGEN	(0x1U << 1)
 #define RCC_APB4ENR_LPUART1EN	(0x1U << 3)
@@ -499,4 +741,4 @@ typedef gpioStruct* gpioPort_t;
 #define RCC_APB4ENR_SAI4EN		(0x1U << 21)
 
 
-#endif /* LIB_HW_STM32H7XX_H_ */
+#endif /* HAL_HW_STM32H7XX_H_ */

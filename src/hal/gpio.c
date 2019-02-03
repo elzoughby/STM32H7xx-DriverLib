@@ -1,10 +1,33 @@
-/*
- * gpio.c
- *
- *  Created on: Jun 16, 2018
- *      Author: ahmed
- */
+/*==============================================================================
 
+ Name        : gpio.c
+ Version     : 1.0.0
+ Description : General Purpose Input/Output driver for STM32H7xx MCUs
+
+--------------------------------------------------------------------------------
+
+ The MIT License (MIT)
+ Copyright (c) 2018 Ahmed Elzoughby
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, ExPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+===============================================================================*/
 
 #include "gpio.h"
 
@@ -17,10 +40,9 @@ static void selectExtILinePort(gpioPort_t port, gpioPin_t pin);
 
 
 
-void gpioPinInit(gpioPort_t port, gpioPinConfig_t* pinConfig) {
+void gpioPinInit(gpioPort_t port, gpioPin_t pin, gpioPinConfig_t* pinConfig) {
 
-	gpioPin_t pin = pinConfig->pin;
-
+	/* Enable clock for the GPIO port */
 	uint8_t portNum = getPortNum(port);
 	RCC->AHB4ENR |= (1 << portNum);
 
@@ -38,6 +60,14 @@ void gpioPinInit(gpioPort_t port, gpioPinConfig_t* pinConfig) {
 	} else {
 		port->AFRH &= ~(0x0FU << ((pin - 8) * 4));
 		port->AFRH |= (pinConfig->altFunc << ((pin - 8) * 4));
+	}
+
+	/* get EXTI Line */
+	extILine_t extILine = pin;
+	if (pinConfig->interruptTrigger == EXTI_DISABLE) {
+		extIDisable(extILine);
+	} else {
+		extISelTrigger(extILine, pinConfig->interruptTrigger);
 	}
 
 }
@@ -79,17 +109,16 @@ void gpioPinToggle(gpioPort_t port, gpioPin_t pin) {
 
 }
 
-void gpioPinAttachInterrupt(gpioPort_t port, gpioPinConfig_t* pinConfig, void (*handler)(void)) {
+void gpioPinAttachInterrupt(gpioPort_t port, gpioPin_t pin, void (*handler)(void)) {
 
 	// get EXTI Line
-	extILine_t extILine = pinConfig->pin;
+	extILine_t extILine = pin;
 
 	// get Interrupt IRQ number
 	interruptSource_t interruptSource = getExtIInterruptSource(extILine);
 
 	extIInit();
-	extISelTrigger(extILine, pinConfig->interruptTrigger);
-	selectExtILinePort(port, pinConfig->pin);
+	selectExtILinePort(port, pin);
 	extIEnable(extILine);
 	interruptInit();
 	interruptHandlerInstall(interruptSource, handler);
@@ -140,7 +169,9 @@ static uint8_t getPortNum(gpioPort_t port) {
 
 static interruptSource_t getExtIInterruptSource(extILine_t extILine) {
 
+	// add the 16 system exceptions
 	interruptSource_t interruptSource;
+
 	if (extILine < 5)
 		interruptSource = EXTI0_IRQn + extILine;
 	else if (extILine < 10)
