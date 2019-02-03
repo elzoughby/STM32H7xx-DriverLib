@@ -35,3 +35,9 @@ Trying to implement a driver library for Nucleo-H743ZI development board for edu
 
     - LED Blinky
 
+
+
+## License
+
+STM32H7xx-DriverLib is distributed under the terms of the MIT license. See [LICENSE](LICENSE) for details. Opening a pull requests is assumed to signal agreement with these licensing terms.
+
