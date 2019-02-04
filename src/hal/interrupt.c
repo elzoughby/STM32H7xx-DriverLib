@@ -39,13 +39,23 @@ static __IO pVFn_t newVectorTable[_VECTOR_TABLE_SIZE] __attribute__ ((section(".
 
 void interruptInit() {
 
-	__IO pVFn_t* origVectorTable = (pVFn_t*) SCB->VTOR;
-	// copy the content of the original vector table into the new vector table
-	for(uint32_t i = 0; i < _VECTOR_TABLE_SIZE; i++)
+	/* ensure that it could be called just once */
+	static bit_t _firstCall = TRUE;
+
+	if(_firstCall) {
+		__IO pVFn_t* origVectorTable = (pVFn_t*) SCB->VTOR;
+		/* copy the content of the original vector table into the new vector table */
+		for(uint32_t i = 0; i < _VECTOR_TABLE_SIZE; i++)
 		newVectorTable[i] = origVectorTable[i];
 
-	// install the new interrupt vector table
-	SCB->VTOR = (uint32_t) &newVectorTable;
+		/* install the new interrupt vector table */
+		SCB->VTOR = (uint32_t) &newVectorTable;
+
+		/* it shouldn't be called again */
+		_firstCall = FALSE;
+	} else {
+		/* Do nothing */
+	}
 
 }
 

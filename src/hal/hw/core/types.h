@@ -46,9 +46,11 @@ typedef enum {
 	ZERO	= 0,
 	OFF		= 0,
 	LOW		= 0,
+	FALSE	= 0,
 	ONE		= 1,
 	ON		= 1,
-	HIGH	= 1
+	HIGH	= 1,
+	TRUE	= 1,
 } bit_t;
 
 #endif /* HAL_HW_CORE_TYPES_H_ */
